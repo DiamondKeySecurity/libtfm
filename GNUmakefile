@@ -20,7 +20,7 @@ clean:
 	cd ${REPO}; git clean -dxf
 
 distclean: clean
-	rm -rf ${REPO}
+	rm -rf ${REPO} TAGS
 
 ${HDR}:
 	git clone -q ${URL}
@@ -35,3 +35,8 @@ $(notdir ${HDR}): ${HDR}
 
 $(notdir ${LIB}): ${LIB}
 	ln -f $^ $@
+
+tags: TAGS
+
+TAGS: ${HDR}
+	find ${REPO} -type f -name '*.[ch]' -print | etags -
