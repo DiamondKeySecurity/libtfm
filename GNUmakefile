@@ -1,14 +1,16 @@
 # Download and build libtfm from source with the options we want.
-#
-# Perhaps we should be using a git subrepository instead of this hack?
-# Work that out later.
 
-# See tfm.pdf section 1.3.6 ("Precision configuration") for details on
-# how FP_MAX_SIZE works.
+# Commit against which we've been testing.  Perhaps we should be using
+# a git subrepository instead of this hack?
+
+URL	:= https://github.com/libtom/tomsfastmath.git
+COMMIT	:= e0fe602802e376a971a84ba300ad0aab17165600
+
+# Maximum size of a bignum.  See tfm.pdf section 1.3.6 ("Precision
+# configuration") for details on how FP_MAX_SIZE works.
 
 BITS	:= 8192
 
-URL	:= https://github.com/libtom/tomsfastmath.git
 
 REPO	:= $(notdir $(basename ${URL}))
 HDR	:= ${REPO}/src/headers/tfm.h
@@ -17,6 +19,8 @@ LIB	:= ${REPO}/libtfm.a
 FLAGS	:= CFLAGS='-fPIC -Wall -W -Wshadow -Isrc/headers -g3 -DFP_MAX_SIZE="(${BITS}+(8*DIGIT_BIT))"'
 
 TARGETS	:= $(notdir ${HDR} ${LIB})
+
+SHA256SUM := $(firstword $(wildcard /usr/local/bin/sha256sum /usr/local/bin/gsha256sum /usr/bin/sha256sum))
 
 all: ${TARGETS}
 
@@ -28,10 +32,15 @@ distclean: clean
 	rm -rf ${REPO} TAGS
 
 ${HDR}:
-	git clone -q ${URL}
+	git clone --quiet --no-checkout ${URL}
+	cd ${REPO}; git checkout --quiet ${COMMIT}
 
 ${LIB}: ${HDR}
-#	sha256sum --check Checksums
+ifeq "" "${SHA256SUM}"
+	@echo "Couldn't find sha256sum, not verifying distribution checksums"
+else
+	${SHA256SUM} --check Checksums
+endif
 	cd ${REPO}; git clean -dxf
 	cd ${REPO}; ${MAKE} ${FLAGS}
 
@@ -49,3 +58,9 @@ tags: TAGS
 
 TAGS: ${HDR}
 	find ${REPO} -type f -name '*.[ch]' -print | etags -
+
+ifneq "" "${SHA256SUM}"
+regenerate-checksums: ${HDR}
+	cd ${REPO}; git clean -dxf
+	find ${REPO} -name .git -prune -o -type f -print | sort | xargs ${SHA256SUM} >Checksums
+endif
