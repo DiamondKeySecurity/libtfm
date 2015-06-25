@@ -16,7 +16,7 @@ REPO	:= $(notdir $(basename ${URL}))
 HDR	:= ${REPO}/src/headers/tfm.h
 LIB	:= ${REPO}/libtfm.a
 
-FLAGS	:= CFLAGS='-fPIC -Wall -W -Wshadow -Isrc/headers -g3 -DFP_MAX_SIZE="(${BITS}+(8*DIGIT_BIT))"'
+FLAGS	:= CFLAGS='-fPIC -Wall -W -Wshadow -Isrc/headers -g3 -DFP_MAX_SIZE="(${BITS}*2+(8*DIGIT_BIT))"'
 
 TARGETS	:= $(notdir ${HDR} ${LIB})
 
@@ -46,7 +46,7 @@ endif
 
 $(notdir ${HDR}): ${HDR}
 	echo  >$@.tmp '/* Configure size of largest bignum we want to handle -- see notes in tfm.pdf */'
-	echo >>$@.tmp '#define   FP_MAX_SIZE   (${BITS}+(8*DIGIT_BIT))'
+	echo >>$@.tmp '#define   FP_MAX_SIZE   (${BITS}*2+(8*DIGIT_BIT))'
 	echo >>$@.tmp ''
 	cat  >>$@.tmp $^
 	mv -f $@.tmp $@
