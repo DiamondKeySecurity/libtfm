@@ -1,18 +1,11 @@
-# Download and build libtfm from source with the options we want.
-
-# Commit against which we've been testing.  Perhaps we should be using
-# a git subrepository instead of this hack?
-
-URL	:= https://github.com/libtom/tomsfastmath.git
-COMMIT	:= e0fe602802e376a971a84ba300ad0aab17165600
+# Use a git submodule to download and build libtfm with the options we want.
 
 # Maximum size of a bignum.  See tfm.pdf section 1.3.6 ("Precision
 # configuration") for details on how FP_MAX_SIZE works.
 
 BITS	:= 8192
 
-
-REPO	:= $(notdir $(basename ${URL}))
+REPO	:= tomsfastmath
 HDR	:= ${REPO}/src/headers/tfm.h
 LIB	:= ${REPO}/libtfm.a
 
@@ -29,11 +22,11 @@ clean:
 	cd ${REPO}; git clean -dxf
 
 distclean: clean
-	rm -rf ${REPO} TAGS
+	git submodule deinit
+	rm -f TAGS
 
 ${HDR}:
-	git clone --quiet --no-checkout ${URL}
-	cd ${REPO}; git checkout --quiet ${COMMIT}
+	git submodule update --init
 
 ${LIB}: ${HDR}
 ifeq "" "${SHA256SUM}"
