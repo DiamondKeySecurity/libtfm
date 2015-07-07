@@ -22,7 +22,7 @@ clean:
 	cd ${REPO}; git clean -dxf
 
 distclean: clean
-	git submodule deinit
+	git submodule deinit ${REPO}
 	rm -f TAGS
 
 ${HDR}:
