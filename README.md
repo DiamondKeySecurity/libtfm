@@ -2,9 +2,9 @@ libtfm
 ======
 
 This is a trivial port of the Tom's Fast Math (TFM) bignum library to
-the Cryptech environment.  At least for now, this just checks the
-package out from GitHub, verifies that the SHA-256 digest of the
-commit we're using matches a known value, and builds the library with
+the Cryptech environment.  We use a git submodule to pull the package
+from GitHub, we verify that the SHA-256 digest of what we got from
+GitHub matches the version we tested, then we build the library with
 the options we want.
 
 See tomsfastmath/doc/tfm.pdf for API details.
