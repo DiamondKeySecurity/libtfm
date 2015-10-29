@@ -37,7 +37,7 @@ REPO	:= tomsfastmath
 HDR	:= ${REPO}/src/headers/tfm.h
 LIB	:= ${REPO}/libtfm.a
 
-FLAGS	:= CFLAGS='-fPIC -Wall -W -Wshadow -Isrc/headers -g3 -DFP_MAX_SIZE="(${BITS}*2+(8*DIGIT_BIT))"'
+CFLAGS	+= -fPIC -Wall -W -Wshadow -Isrc/headers -g3 -DFP_MAX_SIZE="(${BITS}*2+(8*DIGIT_BIT))"
 
 TARGETS	:= $(notdir ${HDR} ${LIB})
 
@@ -63,7 +63,7 @@ else
 	${SHA256SUM} --check Checksums
 endif
 	cd ${REPO}; git clean -dxf
-	cd ${REPO}; ${MAKE} ${FLAGS}
+	cd ${REPO}; ${MAKE} CFLAGS='${CFLAGS}'
 
 $(notdir ${HDR}): ${HDR}
 	echo  >$@.tmp '/* Configure size of largest bignum we want to handle -- see notes in tfm.pdf */'
