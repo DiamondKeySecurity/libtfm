@@ -47,22 +47,21 @@ all: ${TARGETS}
 
 clean:
 	rm -f ${TARGETS} $(notdir ${HDR}.tmp)
-	cd ${REPO}; git clean -dxf
+	cd ${REPO}; ${MAKE} clean
 
 distclean: clean
-	git submodule deinit ${REPO}
 	rm -f TAGS
 
 ${HDR}:
 	git submodule update --init
 
 ${LIB}: ${HDR}
+	cd ${REPO}; ${MAKE} clean
 ifeq "" "${SHA256SUM}"
 	@echo "Couldn't find sha256sum, not verifying distribution checksums"
 else
 	${SHA256SUM} --check Checksums
 endif
-	cd ${REPO}; git clean -dxf
 	cd ${REPO}; ${MAKE} CFLAGS='${CFLAGS}'
 
 $(notdir ${HDR}): ${HDR}
