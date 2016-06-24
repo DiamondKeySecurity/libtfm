@@ -43,6 +43,8 @@ TARGETS	:= $(notdir ${HDR} ${LIB})
 
 SHA256SUM := $(firstword $(wildcard /usr/local/bin/sha256sum /usr/local/bin/gsha256sum /usr/bin/sha256sum))
 
+CHECKSUMS ?= Checksums
+
 all: ${TARGETS}
 
 clean:
@@ -60,7 +62,7 @@ ${LIB}: ${HDR}
 ifeq "" "${SHA256SUM}"
 	@echo "Couldn't find sha256sum, not verifying distribution checksums"
 else
-	${SHA256SUM} --check Checksums
+	${SHA256SUM} --check ${CHECKSUMS}
 endif
 	cd ${REPO}; ${MAKE} CFLAGS='${CFLAGS}'
 
@@ -82,5 +84,5 @@ TAGS: ${HDR}
 ifneq "" "${SHA256SUM}"
 regenerate-checksums: ${HDR}
 	cd ${REPO}; git clean -dxf
-	find ${REPO} -name .git -prune -o -type f -print | sort | xargs ${SHA256SUM} >Checksums
+	find ${REPO} -name .git -prune -o -type f -print | sort | xargs ${SHA256SUM} >${CHECKSUMS}
 endif
